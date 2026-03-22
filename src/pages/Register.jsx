@@ -24,7 +24,7 @@ export default function Register() {
     try {
       await API.post('/auth/register', form)
       setSuccess('Account created! Redirecting to login...')
-      setTimeout(() => navigate('/'), 2000)
+      setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
       setError(err.response?.data?.error || 'Register failed!')
     } finally {
@@ -36,8 +36,7 @@ export default function Register() {
     <Box sx={{
       minHeight: '100vh', display: 'flex',
       alignItems: 'center', justifyContent: 'center',
-      background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
-      py: 4
+      background: 'linear-gradient(135deg, #1976d2, #42a5f5)', py: 4
     }}>
       <Card sx={{ width: 450, borderRadius: 3, boxShadow: 10 }}>
         <CardContent sx={{ p: 4 }}>
@@ -78,11 +77,16 @@ export default function Register() {
             </FormControl>
             <Button fullWidth variant="contained" type="submit"
               size="large" disabled={loading} sx={{ mb: 2, py: 1.5 }}>
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
+              {loading
+                ? <CircularProgress size={24} color="inherit" />
+                : 'Create Account'}
             </Button>
-            <Typography textAlign="center">
+            <Typography textAlign="center" mb={1}>
               Already have account?{' '}
-              <Link to="/" style={{ color: '#1976d2' }}>Login</Link>
+              <Link to="/login" style={{ color: '#1976d2' }}>Login</Link>
+            </Typography>
+            <Typography textAlign="center">
+              <Link to="/" style={{ color: '#1976d2' }}>← Back to Home</Link>
             </Typography>
           </form>
         </CardContent>

@@ -25,7 +25,7 @@ export default function Login() {
       const role = res.data.user.role
       if (role === 'admin') navigate('/admin')
       else if (role === 'seller') navigate('/seller')
-      else navigate('/home')
+      else navigate('/')
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed!')
     } finally {
@@ -61,16 +61,16 @@ export default function Login() {
               onChange={e => setForm({ ...form, password: e.target.value })}
               sx={{ mb: 3 }} required
             />
-            <Button
-              fullWidth variant="contained" type="submit"
-              size="large" disabled={loading}
-              sx={{ mb: 2, py: 1.5 }}
-            >
+            <Button fullWidth variant="contained" type="submit"
+              size="large" disabled={loading} sx={{ mb: 2, py: 1.5 }}>
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
             </Button>
-            <Typography textAlign="center">
+            <Typography textAlign="center" mb={1}>
               Don't have account?{' '}
               <Link to="/register" style={{ color: '#1976d2' }}>Register</Link>
+            </Typography>
+            <Typography textAlign="center">
+              <Link to="/" style={{ color: '#1976d2' }}>← Back to Home</Link>
             </Typography>
           </form>
         </CardContent>

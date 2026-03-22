@@ -18,26 +18,25 @@ import LiveChat from './components/LiveChat'
 
 function ProtectedRoute({ children, roles }) {
   const { isLoggedIn, user } = useSelector(state => state.auth)
-  if (!isLoggedIn) return <Navigate to="/" />
+  if (!isLoggedIn) return <Navigate to="/login" />
   if (roles && !roles.includes(user?.role)) return <Navigate to="/" />
   return children
 }
 
 export default function App() {
-  const { isLoggedIn, user } = useSelector(state => state.auth)
+  const { isLoggedIn } = useSelector(state => state.auth)
 
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* Public Routes — No login needed */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/home" element={
-          <ProtectedRoute><Home /></ProtectedRoute>
-        } />
-        <Route path="/product/:id" element={
-          <ProtectedRoute><ProductDetail /></ProtectedRoute>
-        } />
+        <Route path="/product/:id" element={<ProductDetail />} />
+
+        {/* Protected Routes — Login needed */}
         <Route path="/cart" element={
           <ProtectedRoute roles={['buyer']}><Cart /></ProtectedRoute>
         } />
@@ -61,7 +60,7 @@ export default function App() {
         } />
       </Routes>
 
-      {/* Show chatbot and live chat when logged in */}
+      {/* Show chatbot only when logged in */}
       {isLoggedIn && (
         <>
           <ChatBot />

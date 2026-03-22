@@ -15,13 +15,11 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '../redux/authSlice'
 import NotificationBell from './NotificationBell'
 
-
-
 export default function Navbar({ onSearch }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { user } = useSelector(state => state.auth)
-const { count } = useSelector(state => state.cart)
+  const { user, isLoggedIn } = useSelector(state => state.auth)
+  const { count } = useSelector(state => state.cart)
   const [anchorEl, setAnchorEl] = useState(null)
   const [search, setSearch] = useState('')
 
@@ -61,8 +59,11 @@ const { count } = useSelector(state => state.cart)
           <Toolbar sx={{ py: 1, gap: 2 }}>
 
             {/* Logo */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', mr: 3 }}
-              onClick={() => navigate('/home')}>
+            <Box sx={{
+              display: 'flex', alignItems: 'center',
+              gap: 1, cursor: 'pointer', mr: 3
+            }}
+              onClick={() => navigate('/')}>
               <Box sx={{
                 width: 36, height: 36, borderRadius: 2,
                 background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
@@ -104,69 +105,97 @@ const { count } = useSelector(state => state.cart)
 
             {/* Right side */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <NotificationBell />
-              {user?.role === 'buyer' && (
-                <IconButton onClick={() => navigate('/cart')} sx={{ position: 'relative' }}>
-                  <Badge badgeContent={count} color="error">
-                    <ShoppingCartIcon sx={{ color: '#1976d2' }} />
-                  </Badge>
-                </IconButton>
+
+              {isLoggedIn ? (
+                <>
+                  <NotificationBell />
+
+                  {user?.role === 'buyer' && (
+                    <IconButton onClick={() => navigate('/cart')}>
+                      <Badge badgeContent={count} color="error">
+                        <ShoppingCartIcon sx={{ color: '#1976d2' }} />
+                      </Badge>
+                    </IconButton>
+                  )}
+
+                  {/* User menu */}
+                  <Box sx={{
+                    display: 'flex', alignItems: 'center', gap: 1,
+                    cursor: 'pointer', px: 1.5, py: 0.8,
+                    borderRadius: 2, '&:hover': { background: '#f5f5f5' }
+                  }}
+                    onClick={e => setAnchorEl(e.currentTarget)}>
+                    <Avatar sx={{ width: 32, height: 32, bgcolor: '#1976d2', fontSize: 14 }}>
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Box>
+                      <Typography fontSize={13} fontWeight="bold" lineHeight={1}>
+                        {user?.name?.split(' ')[0]}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary"
+                        lineHeight={1} sx={{ textTransform: 'capitalize' }}>
+                        {user?.role}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Menu anchorEl={anchorEl} open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
+                    PaperProps={{ sx: { borderRadius: 2, minWidth: 200, mt: 1 } }}>
+                    <Box sx={{ px: 2, py: 1 }}>
+                      <Typography fontWeight="bold">{user?.name}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {user?.email}
+                      </Typography>
+                    </Box>
+                    <Divider />
+                    <MenuItem onClick={() => { navigate('/profile'); setAnchorEl(null) }}>
+                      <PersonIcon fontSize="small" sx={{ mr: 1.5 }} /> My Profile
+                    </MenuItem>
+                    {user?.role === 'buyer' && (
+                      <MenuItem onClick={() => { navigate('/dashboard'); setAnchorEl(null) }}>
+                        <DashboardIcon fontSize="small" sx={{ mr: 1.5 }} /> My Dashboard
+                      </MenuItem>
+                    )}
+                    {user?.role === 'seller' && (
+                      <MenuItem onClick={() => { navigate('/seller/products'); setAnchorEl(null) }}>
+                        <InventoryIcon fontSize="small" sx={{ mr: 1.5 }} /> My Products
+                      </MenuItem>
+                    )}
+                    {user?.role === 'admin' && (
+                      <MenuItem onClick={() => { navigate('/admin'); setAnchorEl(null) }}>
+                        <DashboardIcon fontSize="small" sx={{ mr: 1.5 }} /> Admin Dashboard
+                      </MenuItem>
+                    )}
+                    <Divider />
+                    <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                      <LogoutIcon fontSize="small" sx={{ mr: 1.5 }} /> Logout
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                /* Show Login + Register when not logged in */
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate('/login')}
+                    sx={{
+                      borderRadius: 2, textTransform: 'none',
+                      fontWeight: 'bold', px: 2
+                    }}>
+                    Login
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => navigate('/register')}
+                    sx={{
+                      borderRadius: 2, textTransform: 'none',
+                      fontWeight: 'bold', px: 2
+                    }}>
+                    Register
+                  </Button>
+                </Box>
               )}
-
-              {/* User menu */}
-              <Box sx={{
-                display: 'flex', alignItems: 'center', gap: 1,
-                cursor: 'pointer', px: 1.5, py: 0.8,
-                borderRadius: 2, '&:hover': { background: '#f5f5f5' }
-              }}
-                onClick={e => setAnchorEl(e.currentTarget)}>
-                <Avatar sx={{ width: 32, height: 32, bgcolor: '#1976d2', fontSize: 14 }}>
-                  {user?.name?.charAt(0).toUpperCase()}
-                </Avatar>
-                <Box>
-                  <Typography fontSize={13} fontWeight="bold" lineHeight={1}>
-                    {user?.name?.split(' ')[0]}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" lineHeight={1}
-                    sx={{ textTransform: 'capitalize' }}>
-                    {user?.role}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)}
-                onClose={() => setAnchorEl(null)}
-                PaperProps={{ sx: { borderRadius: 2, minWidth: 200, mt: 1 } }}>
-                <Box sx={{ px: 2, py: 1 }}>
-                  <Typography fontWeight="bold">{user?.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">{user?.email}</Typography>
-                </Box>
-                <Divider />
-                <MenuItem onClick={() => { navigate('/profile'); setAnchorEl(null) }}>
-                  <PersonIcon fontSize="small" sx={{ mr: 1.5 }} /> My Profile
-                </MenuItem>
-                {user?.role === 'seller' && (
-                  <MenuItem onClick={() => { navigate('/seller/products'); setAnchorEl(null) }}>
-                    <InventoryIcon fontSize="small" sx={{ mr: 1.5 }} /> My Products
-                  </MenuItem>
-                )}
-
-{user?.role === 'buyer' && (
-  <Button color="inherit" onClick={() => navigate('/dashboard')}
-    sx={{ color: '#424242', textTransform: 'none' }}>
-    My Dashboard
-  </Button>
-)}
-                {user?.role === 'admin' && (
-                  <MenuItem onClick={() => { navigate('/admin'); setAnchorEl(null) }}>
-                    <DashboardIcon fontSize="small" sx={{ mr: 1.5 }} /> Admin Dashboard
-                  </MenuItem>
-                )}
-                <Divider />
-                <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
-                  <LogoutIcon fontSize="small" sx={{ mr: 1.5 }} /> Logout
-                </MenuItem>
-              </Menu>
             </Box>
           </Toolbar>
         </Container>
@@ -175,11 +204,12 @@ const { count } = useSelector(state => state.cart)
         <Box sx={{ borderTop: '1px solid #f0f0f0', background: '#fff' }}>
           <Container maxWidth="xl">
             <Box sx={{ display: 'flex', gap: 0.5, py: 0.5, overflowX: 'auto' }}>
-              {['All Products', 'Electronics', 'Furniture', 'Clothing', 'Food', 'Machinery'].map(cat => (
+              {['All Products', 'Electronics', 'Furniture',
+                'Clothing', 'Food', 'Machinery'].map(cat => (
                 <Button key={cat} size="small"
                   sx={{
-                    textTransform: 'none', color: '#424242', whiteSpace: 'nowrap',
-                    borderRadius: 1.5, px: 2,
+                    textTransform: 'none', color: '#424242',
+                    whiteSpace: 'nowrap', borderRadius: 1.5, px: 2,
                     '&:hover': { background: '#e3f2fd', color: '#1976d2' }
                   }}>
                   {cat}
