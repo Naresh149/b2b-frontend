@@ -35,8 +35,7 @@ export default function ProductCard({ product, onAddToCart }) {
   const emoji = CATEGORY_EMOJIS[product.category_name] || '📦'
 
   const hasImage = product.image &&
-    !product.image.includes('unsplash') &&
-    product.image.startsWith('http')
+  product.image.startsWith('http')
 
   return (
     <Card sx={{
