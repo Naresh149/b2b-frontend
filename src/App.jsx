@@ -61,12 +61,7 @@ export default function App() {
       </Routes>
 
       {/* Show chatbot only when logged in */}
-      {isLoggedIn && (
-        <>
-          <ChatBot />
-          <LiveChat />
-        </>
-      )}
+     
     </>
   )
 }

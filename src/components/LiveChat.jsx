@@ -10,7 +10,10 @@ import ChatIcon from '@mui/icons-material/Chat'
 import { io } from 'socket.io-client'
 import { useSelector } from 'react-redux'
 
-const socket = io('http://localhost:5000')
+const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+  transports: ['websocket'],
+  reconnection: false
+})
 
 export default function LiveChat() {
   const [open, setOpen] = useState(false)
